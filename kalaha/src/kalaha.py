@@ -93,6 +93,7 @@ class Kalaha(object):
             return self.move(house, player)  # Recursively go again
         else: # last drop was in an empty house
             if (player == 'S' and house > 0 and house < 7) or (player == 'N' and house > 7 and house < 14): # but it was our own house
+                #print("regel x")
                 return self.move(house, player) # Recursively go again
             else: # and it was opponents's house
                 return False # hand over the game to opponent
@@ -130,7 +131,8 @@ def playall(board=None, player="S", strategy = []):
             else:  # it was a valid move, but we lost the initiative
                 strat_nxt = copy.deepcopy(strategy)
                 strat_nxt.append(h)
-                if len(strat_nxt) < 4:
+                #if ka.score(player) > 36 and len(strat_nxt) <= 4:
+                if ka.score(player) > 56:
                     print("End of initiative: {} with points {}".format(strat_nxt, ka.score(player)))
                 del ka, strat_nxt
 
@@ -154,10 +156,6 @@ print(again)  # make sure we have no right to continue
 print(ka.score())  # Print the score (assomed 39)
 del ka, again,stra, strategy
 
-### Find optimal strategy
-print("\nPLAY:")
-#playall(None, 'S')
-
 
 ### Check some strategy... 3,2 = 7
 ka = Kalaha()
@@ -165,9 +163,14 @@ strategy = [3,2]  # strategy as described in paper
 again = True  # We are allowed to start
 for stra in strategy:
     if again:
-        ka.show()
         again = ka.move(stra, 'S')
 ka.show()  # show the board
 print(again)  # make sure we have no right to continue
 print(ka.score())  # Print the score (assomed 39)
 del ka, again,stra, strategy
+
+
+### Find optimal strategy
+print("\nPLAY:")
+#playall(None, 'S')
+
