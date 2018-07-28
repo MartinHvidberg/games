@@ -107,32 +107,32 @@ def playall(board=None, player="S", strategy = []):
     :return: TBD, likely nothing
     """
     if not board:
-        board = [6,6,6,6,6,6,0,6,6,6,6,6,6,0]
+        board = [0, 6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6]
     if not isinstance(board, list):
         print("Board is not list")
         return None
     if len(board) != 14:
         print("Board not length 14")
-    if len(strategy) > 9:
-        print("We are in too deep: {}".format(strategy))
         return None
-    else:
-        for h in [1,2,3,4,5,6]:
-            if board[h] > 0:  # there exist stones to grab
-                ka = Kalaha()
-                ka.set_board(board)
-                if ka.move(h, player):  # True if we didn't die
-                    board_nxt = copy.deepcopy(ka.get_board())
-                    strat_nxt = copy.deepcopy(strategy)
-                    strat_nxt.append(h)
-                    playall(board_nxt, player, strat_nxt)
-                    del ka, board_nxt, strat_nxt
-                else:  # it was a valid move, but we lost the initiative
-                    strat_nxt = copy.deepcopy(strategy)
-                    strat_nxt.append(h)
+    if len(strategy) > 9:
+        #print("We are in too deep: {}".format(strategy))
+        return None
+    for h in [1,2,3,4,5,6]:
+        if board[h] > 0:  # there exist stones to grab
+            ka = Kalaha()
+            ka.set_board(copy.deepcopy(board))
+            if ka.move(h, player):  # True if we didn't die
+                board_nxt = copy.deepcopy(ka.get_board())
+                strat_nxt = copy.deepcopy(strategy)
+                strat_nxt.append(h)
+                playall(board_nxt, player, strat_nxt)
+                del ka, board_nxt, strat_nxt
+            else:  # it was a valid move, but we lost the initiative
+                strat_nxt = copy.deepcopy(strategy)
+                strat_nxt.append(h)
+                if len(strat_nxt) < 4:
                     print("End of initiative: {} with points {}".format(strat_nxt, ka.score(player)))
-                    del ka, strat_nxt
-
+                del ka, strat_nxt
 
 
 ##  # Some test cases
@@ -156,4 +156,18 @@ del ka, again,stra, strategy
 
 ### Find optimal strategy
 print("\nPLAY:")
-playall(None, 'S')
+#playall(None, 'S')
+
+
+### Check some strategy... 3,2 = 7
+ka = Kalaha()
+strategy = [3,2]  # strategy as described in paper
+again = True  # We are allowed to start
+for stra in strategy:
+    if again:
+        ka.show()
+        again = ka.move(stra, 'S')
+ka.show()  # show the board
+print(again)  # make sure we have no right to continue
+print(ka.score())  # Print the score (assomed 39)
+del ka, again,stra, strategy
