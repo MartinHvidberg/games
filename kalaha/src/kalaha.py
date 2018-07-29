@@ -1,5 +1,7 @@
 
 import copy
+import datetime
+
 
 class Kalaha(object):
 
@@ -115,7 +117,7 @@ def playall(board=None, player="S", strategy = []):
     if len(board) != 14:
         print("Board not length 14")
         return None
-    if len(strategy) > 9:
+    if len(strategy) > 9:  # 14 tager 33 min
         #print("We are in too deep: {}".format(strategy))
         return None
     for h in [1,2,3,4,5,6]:
@@ -132,7 +134,7 @@ def playall(board=None, player="S", strategy = []):
                 strat_nxt = copy.deepcopy(strategy)
                 strat_nxt.append(h)
                 #if ka.score(player) > 36 and len(strat_nxt) <= 4:
-                if ka.score(player) > 56:
+                if ka.score(player) > 56:  # max er 67, via fx [2,6,1,1,2,2,5,3,5,3,6,1,1,5,3]
                     print("End of initiative: {} with points {}".format(strat_nxt, ka.score(player)))
                 del ka, strat_nxt
 
@@ -171,6 +173,6 @@ del ka, again,stra, strategy
 
 
 ### Find optimal strategy
-print("\nPLAY:")
-#playall(None, 'S')
-
+print("\nPLAY start: {}".format(datetime.datetime.now()))
+playall(None, 'S')
+print("\nPLAY stops: {}".format(datetime.datetime.now()))
