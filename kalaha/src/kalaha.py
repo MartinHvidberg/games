@@ -5,7 +5,7 @@ import datetime
 
 class Kalaha(object):
 
-    variable = "blah"
+    rules = "default"  # "default", "x"
 
     def __init__(self, m=6, n=6):  # m: number of houses, n: number of stones in each house
         self.m = m
@@ -68,7 +68,7 @@ class Kalaha(object):
         :return: True if it's still your turn, i.e. you dropped last stone
          in your own home, otherwise it returns False
         """
-        ##print(" move: {} {}".format(player, house))
+        #print(" move: {} {} ({})".format(player, house, self.b[house]))
         if player not in ['N', 'S']:
             raise ValueError("Player must be 'N' or 'S'")
         if player=='N':
@@ -94,10 +94,13 @@ class Kalaha(object):
         if self.b[house] > 1: # We didn't drop last stone in an empty house
             return self.move(house, player)  # Recursively go again
         else: # last drop was in an empty house
-            if (player == 'S' and house > 0 and house < 7) or (player == 'N' and house > 7 and house < 14): # but it was our own house
-                #print("regel x")
-                return self.move(house, player) # Recursively go again
-            else: # and it was opponents's house
+            if self.rules == 'x': # you can't die in our own house
+                if (player == 'S' and house > 0 and house < 7) or (player == 'N' and house > 7 and house < 14):
+                    ##print("regel x")
+                    return self.move(house, player) # Recursively go again
+                else: # and it was opponents's house
+                    return False # hand over the game to opponent
+            if self.rules == 'deafult':
                 return False # hand over the game to opponent
 
 
@@ -117,7 +120,7 @@ def playall(board=None, player="S", strategy = []):
     if len(board) != 14:
         print("Board not length 14")
         return None
-    if len(strategy) > 9:  # 14 tager 33 min
+    if len(strategy) > 14:  # 14 tager 33 min
         #print("We are in too deep: {}".format(strategy))
         return None
     for h in [1,2,3,4,5,6]:
@@ -146,33 +149,37 @@ if False:
 
 
 ### Check the strategy of the boys
-# https://politiken.dk/viden/Viden/art6610055/S%C3%A5dan-vinder-du-kalaha-hver-gang
-ka = Kalaha()
-strategy = [1,5,4,1,6,5,6,5]  # strategy as described in paper
-again = True  # We are allowed to start
-for stra in strategy:
-    if again:
-        again = ka.move(stra, 'S')
-ka.show()  # show the board
-print(again)  # make sure we have no right to continue
-print(ka.score())  # Print the score (assomed 39)
-del ka, again,stra, strategy
+if False:
+    # https://politiken.dk/viden/Viden/art6610055/S%C3%A5dan-vinder-du-kalaha-hver-gang
+    ka = Kalaha()
+    strategy = [1,5,4,1,6,5,6,5]  # strategy as described in paper
+    again = True  # We are allowed to start
+    for stra in strategy:
+        if again:
+            print("-Takt: S {}".format(stra))
+            again = ka.move(stra, 'S')
+    ka.show()  # show the board
+    print(again)  # make sure we have no right to continue
+    print(ka.score())  # Print the score (assomed 39)
+    del ka, again,stra, strategy
 
 
 ### Check some strategy... 3,2 = 7
-ka = Kalaha()
-strategy = [3,2]  # strategy as described in paper
-again = True  # We are allowed to start
-for stra in strategy:
-    if again:
-        again = ka.move(stra, 'S')
-ka.show()  # show the board
-print(again)  # make sure we have no right to continue
-print(ka.score())  # Print the score (assomed 39)
-del ka, again,stra, strategy
+if False:
+    ka = Kalaha()
+    strategy = [2,6,1,1,2,2,4,5,4,4]  # strategy as described in paper
+    again = True  # We are allowed to start
+    for stra in strategy:
+        if again:
+            again = ka.move(stra, 'S')
+    ka.show()  # show the board
+    print(again)  # make sure we have no right to continue
+    print(ka.score())  # Print the score (assomed 39)
+    del ka, again,stra, strategy
 
 
 ### Find optimal strategy
-print("\nPLAY start: {}".format(datetime.datetime.now()))
-playall(None, 'S')
-print("\nPLAY stops: {}".format(datetime.datetime.now()))
+if True:
+    print("\nPLAY start: {}".format(datetime.datetime.now()))
+    playall(None, 'S')
+    print("\nPLAY stops: {}".format(datetime.datetime.now()))
