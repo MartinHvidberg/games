@@ -8,7 +8,7 @@ class Suite(object):
             colour = 2
         self.colour = colour
 
-    def flip(self):
+    def next(self):
         if self.colour == 1:
             self.colour = 2
         elif self.colour == 2:
@@ -100,33 +100,63 @@ class TTTboard(object):
         else:
             return None
 
-class Rolf_player(object):
+
+class Player(object):
+
+    def __init__(self, board, who):
+        return
+
+    # def whos_next(self, who):
+    #     who.next()
+    #     return who
+
+class Odin_player(Player):
+    """ One
+    Only looks at the present board, no long term strategy.
+    Avoids the most obvious traps, and know s strategy ..."""
 
     def __init__(self):
         return
 
-    def draw_ttt(self, board, suite):
+    def draw_ttt(self, board, who):
+        # Look for immediate Win
+        for sli in board.slices:
+            if can_win()
+        # Look for immediate Lose
+
+        # Look for other options ...
+        who.next()
+        return board, who
+
+class Rolf_player(Player):
+    """ Rolf (Random Of Legal Fields)
+    This player will pick a random, though legal, move.
+    No strategy involved - pure random play. """
+    def __init__(self):
+        return
+
+    def draw_ttt(self, board, who):
         if isinstance(board, TTTboard):
-            if not board.full(suite):
+            if not board.full(who):
                 while True:
-                    guess = secrets.randbelow(9) # random.randrange(9)
+                    guess = secrets.randbelow(9)
                     if board.vacant(guess):
-                        board.set(guess, suite)
+                        board.set(guess, who)
                         break
             else:
                 while True:
-                    guess1 = secrets.randbelow(9) # random.randrange(9)
-                    if board.get(guess1) == suite.colour:
+                    guess1 = secrets.randbelow(9)
+                    if board.get(guess1) == who.colour:
                         board.set(guess1, 0)
                         while True:
-                            guess2 = secrets.randbelow(9) # random.randrange(9)
+                            guess2 = secrets.randbelow(9)
                             if guess2 != guess1:
                                 if board.get(guess2) == 0:
-                                    board.set(guess2, suite.colour)
+                                    board.set(guess2, who.colour)
                                     break
                         break
-        suite.flip()
-        return board, suite
+        who.next()
+        return board, who
 
 
 if __name__ == '__main__':
@@ -134,9 +164,9 @@ if __name__ == '__main__':
     def play_rolf_x2():
         brd_p = TTTboard()
         rolf = Rolf_player()
-        suite = Suite(secrets.choice([1,2]))
+        who = Suite(secrets.choice([1,2]))
         while not brd_p.done():
-            rolf.draw_ttt(brd_p, suite)
+            rolf.draw_ttt(brd_p, who)
         return brd_p.winner()
 
     dic_win = {1: 0, 2: 0}
