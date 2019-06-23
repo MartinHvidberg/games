@@ -110,10 +110,10 @@ class Player(object):
     #     who.next()
     #     return who
 
-class Odin_player(Player):
-    """ One
+class Thor_player(Player):
+    """ Tactical Horizon One Round
     Only looks at the present board, no long term strategy.
-    Avoids the most obvious traps, and know s strategy ..."""
+    Avoids the most obvious traps, and know some strategies ..."""
 
     def __init__(self):
         return
