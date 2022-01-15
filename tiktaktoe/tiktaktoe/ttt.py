@@ -121,7 +121,8 @@ class Thor_player(Player):
     def draw_ttt(self, board, who):
         # Look for immediate Win
         for sli in board.slices:
-            if can_win()
+            if can_win():
+                pass  # XXX
         # Look for immediate Lose
 
         # Look for other options ...
