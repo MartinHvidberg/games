@@ -29,8 +29,16 @@ class Keyb(Hplayer):
         self.name = tup_p[0]
 
     def draw(self, brd):
-        # ToDo: Make a move ...
-
+        # Make a move ...
+        bol_okay = False
+        while not bol_okay:
+            print(f"Keyboard move:\n{brd}")
+            mv = input('Choose a move, e.g. A b2 or a3 b2.\n')
+            print(f"Keyb: {mv}")
+            bol_okay, str_mv = brd.move_validator(mv)
+            if not bol_okay:
+                print(str_mv)  # move was invalid, printing why.
+        print(f"making move: {str_mv}")
         return brd
 
 def player(tup_p):

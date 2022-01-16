@@ -26,9 +26,12 @@ class Hboard:
     def __str__(self):
         b = [str(itm) if isinstance(itm, str) else '<--->' for itm in self.board]
         x = [str(tok) for tok in self.x_pcs]
-        str_b = ",".join(b[0:4]) + "\n" + ",".join(b[4:8]) + "\n" + ",".join(b[8:12]) + "\n" + ",".join(b[12:16])
-        str_x = "[" + " ".join(x) + "]"
-        return str_b + "\n" + str_x
+        r = [chr(n+65) for n in range(len(x))]
+        lst_rest = [str(itm).replace("'", "").replace("(", "").replace(")", "").replace(", ", ":") for itm in list(zip(r,x))]  # ToDo: Find a prettier way
+        str_a = "    a     b     c     d"
+        str_b = "1 " + ",".join(b[0:4]) + "\n2 " + ",".join(b[4:8]) + "\n3 " + ",".join(b[8:12]) + "\n4 " + ",".join(b[12:16])
+        str_x =  ", ".join(lst_rest)
+        return str_a + "\n" + str_b + "\n\n" + str_x
 
     def create_piece_set(self):
         """ Creates a set of 8 pieces that suites this game """
@@ -39,7 +42,7 @@ class Hboard:
                     lst_ret.append(Hpiece(c, s, h))
         return (lst_ret)
 
-    def set(self, pos, pce):
+    def old_set(self, pos, pce):
         if isinstance(pce, Hpiece):
             self.board[pos] = pce
             self._latest_draw_colour = player_id
@@ -49,6 +52,19 @@ class Hboard:
     def get(self, pos):
         """ Returns a type Hpiece, or None """
         return self.board[pos]
+
+    def move_validator(self, mve_a):
+        """ Tests a move, to access if it's valid.
+        :param tuple mve: tuple of 2 items, each string describing board position, or single letter for reserve pieces.
+            e.g. a3 b2 or A b2. Any non letter or digit is a seperator
+        :return tuple of boolean and str: False if violation is found, otherwise True. String describes violation """
+        lst_mve = "".join([tok if tok.lower() in 'abcdefgh1234' else ' ' for tok in mve_a]).split(' ')  # make all seperators ' '
+        lst_mve = list(filter(lambda a: a != '', lst_mve))  # remove all empty entries
+        if len(lst_mve) != 2:
+            return False, f"Invalid move: more than two locations specified: {lst_mve}"
+        XXX more validity checks here XXX
+        print(f"lst_mve: {lst_mve}")
+        return True, ", ".join(lst_mve)
 
     def slices(self):
         """

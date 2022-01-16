@@ -66,5 +66,5 @@ class HGame:
 
 if __name__ == "__main__":
 
-    gam_a = HGame([("A", "Rolf"), ("B", "Rolf")])  # Initialise the game with player names and types
+    gam_a = HGame([("A", "Rolf"), ("B", "KB")])  # Initialise the game with player names and types
     gam_a.play()
