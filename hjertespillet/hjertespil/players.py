@@ -38,7 +38,9 @@ class Keyb(Hplayer):
             bol_okay, str_mv = brd.move_validator(mv)
             if not bol_okay:
                 print(str_mv)  # move was invalid, printing why.
-        print(f"making move: {str_mv}")
+            else:
+                print(f"making move: {str_mv}")
+                brd.move(str_mv)
         return brd
 
 def player(tup_p):
