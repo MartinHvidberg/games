@@ -146,9 +146,7 @@ class Hboard:
             f, t = [tok.strip(',') for tok in str_mv.split()]  # str in form 'A, b2' or 'a1, b2'
             if len(f) in [1, 2]:
                 pce_a = self._pic(f)
-                ##print(f" --- got piece: {pce_a}")
                 self._set(pce_a, t)
-                ##print(f" --- sot it at: {t}")
             else:
                 print(f"move(): Very strange. From sems to be neither length 1 nor 2? {str_mv}")
         else:
