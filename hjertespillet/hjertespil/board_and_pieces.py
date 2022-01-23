@@ -6,7 +6,7 @@ class Hboard:
 
     def __init__(self):
         self.board = [Hpiece()] * 16  # 4x4 Empty pieces
-        self.x_pcs = self.create_piece_set()  # the xtra (reserve) pieces, outside the board
+        self.x_pcs = self._create_piece_set()  # the xtra (reserve) pieces, outside the board
         self._current = 0  # some internal counter for iterator __next__
         self._done = False  # Initially False, but become True if game is done
         self._winner = ''  # Initially '', later holds the id of the winner
@@ -28,10 +28,17 @@ class Hboard:
         x = [str(tok) for tok in self.x_pcs]
         r = [chr(n+65) for n in range(len(x))]
         lst_rest = [str(itm).replace("'", "").replace("(", "").replace(")", "").replace(", ", ":") for itm in list(zip(r,x))]  # ToDo: Find a prettier way
-        str_a = "    a     b     c     d"
-        str_b = "1 " + ",".join(b[0:4]) + "\n2 " + ",".join(b[4:8]) + "\n3 " + ",".join(b[8:12]) + "\n4 " + ",".join(b[12:16])
+        str_o = "  -------------------------"
+        str_a = "      1     2     3     4"
+        str_b = "  a " + ",".join(b[0:4]) + "\n  b " + ",".join(b[4:8]) + "\n  c " + ",".join(b[8:12]) + "\n  d " + ",".join(b[12:16])
         str_x =  ", ".join(lst_rest)
-        return str_a + "\n" + str_b + "\n\n reserve: " + str_x
+        return str_o + "\n" + str_a + "\n" + str_b + "\n\n  reserve: " + str_x + "\n" + str_o
+
+    def as_text_line(self):
+        """ Return a one-line text version og the board """
+        str_b = ",".join([str(itm) for itm in self.board])
+        str_r = ",".join([str(itm) for itm in self.x_pcs])
+        return "|" + str_b + "/" + str_r + "|"
 
     @staticmethod
     def tile_valid(str_pos):
@@ -50,6 +57,7 @@ class Hboard:
     def _pos2n(pos):
         """ translate from pos to n
         e.g. a1 = 0, a4 = 3, b1 = 4, ... d4 = 15 """
+        pos = pos.lower()
         if Hboard.tile_valid(pos):
             cols, rows = "abcd", "1234"
             num_c = max(cols.find(pos[0]), cols.find(pos[1]))
@@ -69,7 +77,7 @@ class Hboard:
             raise ValueError
 
     @staticmethod
-    def create_piece_set():
+    def _create_piece_set():
         """ Creates a set of 8 pieces that suites this game """
         lst_ret = list()
         for c in range(1, 3):  # Colour
@@ -83,7 +91,7 @@ class Hboard:
         Returns a type Hpiece """
         return self.board[Hboard._pos2n(pos)]
 
-    def pic(self, pos):
+    def _pic(self, pos):
         """ Pick up the piece in this position
         pos of type b4 is in the board, while single letter (max H) is the reserve
         :param pos: a string length 1 or 2 """
@@ -93,19 +101,19 @@ class Hboard:
                 return self.x_pcs.pop(num_pos)
         if len(pos) == 2:
             pce_ret = self.get(pos)
-            self.set(Hpiece(), pos)
+            self._set(Hpiece(), pos)
             return pce_ret
         else:
             raise ValueError(f"pic() can't handle inout: {pos}")
 
-    def set(self, pce, pos):
+    def _set(self, pce, pos):
         """ Set the piece on that position """
         num_pos = Hboard._pos2n(pos)
-        print(f" bb: {pce}, {pos}/{num_pos},\n{self}")
-        self.board[num_pos] = pce  xxx why is set not holding...
-        print(f" ba: {pce}, {pos}/{num_pos},\n{self}")
+        ##print(f" bb: {pce}, {pos}/{num_pos},\n{self}")
+        self.board[num_pos] = pce
+        ##print(f" ba: {pce}, {pos}/{num_pos},\n{self}")
 
-    def move_validator(self, mve_a):
+    def _move_validator(self, mve_a):
         """ Tests a move, to access if it's valid.
         :param tuple mve: tuple of 2 items, each string describing board position, or single letter for reserve pieces.
             e.g. a3 b2 or A b2. Any non letter or digit is a seperator
@@ -116,7 +124,7 @@ class Hboard:
         lst_mve = "".join([tok if tok.lower() in 'abcdefgh1234' else ' ' for tok in mve_a]).split(' ')  # make all separators ' '
         lst_mve = list(filter(lambda a: a != '', lst_mve))  # remove all empty entries
         if len(lst_mve) != 2:
-            return False, f"Invalid move: more than two locations specified: {lst_mve}"
+            return False, f"Invalid move: You must give exactly two valid positions: {lst_mve}"
         # Check the From item
         itm_f = lst_mve[0]
         num_reserve_slot = 'ABCDEFGH'.find(itm_f.upper())
@@ -126,24 +134,25 @@ class Hboard:
             return False, f"Invalid move: From part do not specify a valid piece: {lst_mve}"
         # Check the To item
         itm_t = lst_mve[1]
-        print(f"move_validator(): lst_mve: {lst_mve}")
+        ##print(f"move_validator(): lst_mve: {lst_mve}")
         return True, ", ".join(lst_mve)
 
-    def move(self, str_m):
+    def make_move(self, str_m):
         """ Make the actual move
-        Don't assume it have been validated """
-        bol_go, str_mv = self.move_validator(str_m)
+        This should be the only way for users/players to manipulate the board and pieces
+        Don't assume str_m has been validated """
+        bol_go, str_mv = self._move_validator(str_m)
         if bol_go:
             f, t = [tok.strip(',') for tok in str_mv.split()]  # str in form 'A, b2' or 'a1, b2'
             if len(f) in [1, 2]:
-                pce_a = self.pic(f)
-                print(f" --- got piece: {pce_a}")
-                self.set(pce_a, t)
-                print(f" --- sot it at: {t}")
+                pce_a = self._pic(f)
+                ##print(f" --- got piece: {pce_a}")
+                self._set(pce_a, t)
+                ##print(f" --- sot it at: {t}")
             else:
-                raise ValueError(f"move(): Very strange. From sems to be neither length 1 nor 2? {str_mv}")
+                print(f"move(): Very strange. From sems to be neither length 1 nor 2? {str_mv}")
         else:
-            raise ValueError(f"move(): Can't handle input, since it didn't pass move_validator(): {str_mv}")
+            print(f"move(): Can't handle input, since it didn't pass move_validator(): {str_mv}")
 
     def slices(self):
         """
@@ -167,14 +176,14 @@ class Hboard:
         """
         return [True, False, False]
 
-    def _check_done(self):
-        self._done = any([any(self.uniform_att(lst_pcs)) for lst_pcs in self.slices()])
-
     def done(self):
-        self._check_done()
+        """ Return True if board is in a state of Done, i.e. there is a win-situation
+        otherwise False """
+        self._done = any([any(self.uniform_att(lst_pcs)) for lst_pcs in self.slices()])
         return self._done
 
     def winner(self):
+        """ If game is done, i.e. there is a win-situation, returns the winners name. Otherwise return None """
         if self.done():
             return self._winner
         else:

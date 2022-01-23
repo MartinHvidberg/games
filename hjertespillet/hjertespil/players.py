@@ -34,13 +34,8 @@ class Keyb(Hplayer):
         while not bol_okay:
             print(f"Keyboard move:\n{brd}")
             mv = input('Choose a move, e.g. A b2 or a3 b2.\n')
-            print(f"Keyb: {mv}")
-            bol_okay, str_mv = brd.move_validator(mv)
-            if not bol_okay:
-                print(str_mv)  # move was invalid, printing why.
-            else:
-                print(f"making move: {str_mv}")
-                brd.move(str_mv)
+            print(f"Kbrd.: making move: {mv}")
+            brd.make_move(mv)
         return brd
 
 def player(tup_p):
